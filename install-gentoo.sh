@@ -93,6 +93,9 @@ echo "es_VE.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 eselect locale set es_VE.utf8
 
+# Crear directorio de repositorio antes de sincronizar para evitar errores de Portage
+mkdir -p /var/db/repos/gentoo
+
 # Sincronización y Kernel
 emerge-webrsync
 USE="-introspection -doc" emerge $KERNEL_PKG
@@ -127,4 +130,5 @@ rm /mnt/gentoo/tmp/inside_chroot.sh
 echo "==> Desmontando particiones..."
 umount -R /mnt/gentoo
 
+echo "¡Listo! Puedes reiniciar el sistema con el comando 'reboot'."
 echo "¡Listo! Puedes reiniciar el sistema con el comando 'reboot'."
