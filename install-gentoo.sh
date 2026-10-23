@@ -2,8 +2,8 @@
 set -e
 
 # --- CONFIGURACIÓN ---
-DISK="/dev/sda"
-HOSTNAME="gentoo-vbox"
+DISK="/dev/vda"
+HOSTNAME="gentoo-boxes"
 TIMEZONE="America/Caracas"
 ROOT_PASSWORD="TuPasswordAqui"
 KERNEL_PKG="sys-kernel/gentoo-kernel-bin"
@@ -41,6 +41,8 @@ CFLAGS="\${COMMON_FLAGS}"
 CXXFLAGS="\${COMMON_FLAGS}"
 FCFLAGS="\${COMMON_FLAGS}"
 FFLAGS="\${COMMON_FLAGS}"
+MAKEOPTS="-j3"
+EMERGE_DEFAULT_OPTS="--jobs=2 --load-average=3.5"
 ACCEPT_KEYWORDS="~amd64"
 ACCEPT_LICENSE="*"
 EOF
