@@ -67,6 +67,7 @@ MAKEOPTS="-j3"
 EMERGE_DEFAULT_OPTS="--jobs=2 --load-average=3.5"
 ACCEPT_KEYWORDS="~amd64"
 ACCEPT_LICENSE="*"
+GRUB_PLATFORMS="efi-64"
 EOF
 
 echo "==> 6. Preparando entorno chroot..."
@@ -77,6 +78,12 @@ mount --make-rslave /mnt/gentoo/sys
 mount --rbind /dev /mnt/gentoo/dev
 mount --make-rslave /mnt/gentoo/dev
 mount --bind /run /mnt/gentoo/run
+
+# Montar variables EFI si el sistema anfitrión usa UEFI
+if [ -d /sys/firmware/efi/efivars ]; then
+    mkdir -p /mnt/gentoo/sys/firmware/efi/efivars
+    mount --bind /sys/firmware/efi/efivars /mnt/gentoo/sys/firmware/efi/efivars
+fi
 
 echo "==> 7. Ejecutando la segunda fase dentro del chroot..."
 cat <<CHROOT_SCRIPT > /mnt/gentoo/tmp/inside_chroot.sh
@@ -121,9 +128,9 @@ rc-update add dhcpcd default
 # Contraseña Root
 echo "root:$ROOT_PASSWORD" | chpasswd
 
-# Instalación de GRUB
+# Instalación de GRUB con soporte removible/fallback para máquinas virtuales
 emerge sys-boot/grub
-grub-install --target=x86_64-efi --efi-directory=/boot/efi
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --removable
 grub-mkconfig -o /boot/grub/grub.cfg
 
 echo "==> INSTALACIÓN COMPLETADA EXITOSAMENTE <=="
