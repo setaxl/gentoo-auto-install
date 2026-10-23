@@ -86,18 +86,20 @@ set -e
 source /etc/profile
 export PS1="(chroot) \$PS1"
 
-# Zona horaria y Locale
+# Zona horaria básica
 echo "$TIMEZONE" > /etc/timezone
+
+# 1. PRIMERO sincronizamos el repositorio de Portage antes de cualquier comando emerge
+mkdir -p /var/db/repos/gentoo
+emerge-webrsync
+
+# 2. Configuraciones que requieren un repositorio válido
 emerge --config sys-libs/timezone-data
 echo "es_VE.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 eselect locale set es_VE.utf8
 
-# Crear directorio de repositorio antes de sincronizar para evitar errores de Portage
-mkdir -p /var/db/repos/gentoo
-
-# Sincronización y Kernel
-emerge-webrsync
+# 3. Instalación del Kernel
 USE="-introspection -doc" emerge $KERNEL_PKG
 
 # Tabla fstab
@@ -130,5 +132,4 @@ rm /mnt/gentoo/tmp/inside_chroot.sh
 echo "==> Desmontando particiones..."
 umount -R /mnt/gentoo
 
-echo "¡Listo! Puedes reiniciar el sistema con el comando 'reboot'."
 echo "¡Listo! Puedes reiniciar el sistema con el comando 'reboot'."
