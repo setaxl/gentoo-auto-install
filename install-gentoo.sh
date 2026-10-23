@@ -89,17 +89,21 @@ export PS1="(chroot) \$PS1"
 # Zona horaria básica
 echo "$TIMEZONE" > /etc/timezone
 
-# 1. PRIMERO sincronizamos el repositorio de Portage antes de cualquier comando emerge
+# 1. Sincronizar repositorio de Portage
 mkdir -p /var/db/repos/gentoo
 emerge-webrsync
 
-# 2. Configuraciones que requieren un repositorio válido
+# 2. Configuraciones de entorno y localización
 emerge --config sys-libs/timezone-data
 echo "es_VE.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 eselect locale set es_VE.utf8
 
-# 3. Instalación del Kernel
+# 3. Configurar USE flags requeridos por el kernel (evita bloqueos)
+mkdir -p /etc/portage/package.use
+echo "sys-kernel/installkernel dracut" >> /etc/portage/package.use/custom
+
+# 4. Instalación del Kernel
 USE="-introspection -doc" emerge $KERNEL_PKG
 
 # Tabla fstab
