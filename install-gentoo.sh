@@ -41,8 +41,6 @@ CFLAGS="\${COMMON_FLAGS}"
 CXXFLAGS="\${COMMON_FLAGS}"
 FCFLAGS="\${COMMON_FLAGS}"
 FFLAGS="\${COMMON_FLAGS}"
-MAKEOPTS="-j3"
-EMERGE_DEFAULT_OPTS="--jobs=2 --load-average=3.5"
 ACCEPT_KEYWORDS="~amd64"
 ACCEPT_LICENSE="*"
 EOF
@@ -67,9 +65,9 @@ export PS1="(chroot) \$PS1"
 # Zona horaria y Locale
 echo "$TIMEZONE" > /etc/timezone
 emerge --config sys-libs/timezone-data
-echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+echo "es_VE.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
-eselect locale set en_US.utf8
+eselect locale set es_VE.utf8
 
 # Sincronización y Kernel
 emerge-webrsync
