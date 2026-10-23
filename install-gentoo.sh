@@ -141,6 +141,6 @@ chroot /mnt/gentoo /tmp/inside_chroot.sh
 rm /mnt/gentoo/tmp/inside_chroot.sh
 
 echo "==> Desmontando particiones..."
-umount -R /mnt/gentoo
+umount -R -l /mnt/gentoo 2>/dev/null || true
 
 echo "¡Listo! Puedes reiniciar el sistema con el comando 'reboot'."
