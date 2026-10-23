@@ -7,6 +7,11 @@ HOSTNAME="gentoo-boxes"
 TIMEZONE="America/Caracas"
 ROOT_PASSWORD="TuPasswordAqui"
 KERNEL_PKG="sys-kernel/gentoo-kernel-bin"
+BASE_URL="https://distfiles.gentoo.org/releases/amd64/autobuilds"
+
+echo "==> 0. Desmontando cualquier punto previo en $DISK..."
+swapoff -a 2>/dev/null || true
+umount -R /mnt/gentoo 2>/dev/null || true
 
 echo "==> 1. Particionando disco $DISK..."
 parted -s "$DISK" mklabel gpt
@@ -22,15 +27,21 @@ swapon "${DISK}2"
 mkfs.ext4 -F "${DISK}3"
 
 echo "==> 3. Montando particiones..."
+mkdir -p /mnt/gentoo
 mount "${DISK}3" /mnt/gentoo
 mkdir -p /mnt/gentoo/boot/efi
 mount "${DISK}1" /mnt/gentoo/boot/efi
 
-echo "==> 4. Descargando y extrayendo Stage3..."
+echo "==> 4. Descargando y extrayendo Stage3 con estructura de timestamp..."
 cd /mnt/gentoo
-# Descarga automáticamente el último tarball disponible de Stage3 OpenRC
-STAGE3_URL=$(curl -s https://downloads.gentoo.org/releases/amd64/autobuilds/latest-stage3-amd64-openrc.txt | grep -v '^#' | awk '{print $1}')
-wget "https://downloads.gentoo.org/releases/amd64/autobuilds/${STAGE3_URL}"
+# Extrae la ruta relativa (ej. 20261018T124555Z/stage3-amd64-openrc-20261018T124555Z.tar.xz)
+STAGE3_PATH=$(curl -s "${BASE_URL}/latest-stage3-amd64-openrc.txt" | grep -v '^#' | awk '{print $1}')
+FULL_URL="${BASE_URL}/${STAGE3_PATH}"
+
+echo "URL de descarga: $FULL_URL"
+wget "$FULL_URL"
+
+# Extrae el archivo tar.xz descargado dinámicamente
 tar xpvf stage3-*.tar.xz --xattrs-include='*.*' --numeric-owner
 rm stage3-*.tar.xz
 
