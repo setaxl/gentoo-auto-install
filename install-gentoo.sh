@@ -7,7 +7,25 @@ HOSTNAME="gentoo-boxes"
 TIMEZONE="America/Caracas"
 ROOT_PASSWORD="TuPasswordAqui"
 KERNEL_PKG="sys-kernel/gentoo-kernel-bin"
-BASE_URL="https://distfiles.gentoo.org/releases/amd64/autobuilds"
+
+echo "=================================================="
+echo "      SELECCIÓN DE PERFIL DE STAGE3 GENTOO        "
+echo "=================================================="
+echo "1) Base OpenRC (Minimal / Servidor)"
+echo "2) Desktop OpenRC (Con perfiles de escritorio)"
+read -p "Elige una opción [1 o 2] (Por defecto 1): " STAGE_CHOICE
+
+case $STAGE_CHOICE in
+    2)
+        EXACT_STAGE3_URL="https://distfiles.gentoo.org/releases/amd64/autobuilds/20261018T124555Z/stage3-amd64-desktop-openrc-20261018T124555Z.tar.xz"
+        echo "--> Has seleccionado: Desktop OpenRC"
+        ;;
+    *)
+        EXACT_STAGE3_URL="https://distfiles.gentoo.org/releases/amd64/autobuilds/20261018T124555Z/stage3-amd64-openrc-20261018T124555Z.tar.xz"
+        echo "--> Has seleccionado: Base OpenRC"
+        ;;
+esac
+echo "=================================================="
 
 echo "==> 0. Desmontando cualquier punto previo en $DISK..."
 swapoff -a 2>/dev/null || true
@@ -32,16 +50,9 @@ mount "${DISK}3" /mnt/gentoo
 mkdir -p /mnt/gentoo/boot/efi
 mount "${DISK}1" /mnt/gentoo/boot/efi
 
-echo "==> 4. Descargando y extrayendo Stage3 con estructura de timestamp..."
+echo "==> 4. Descargando y extrayendo el Stage3 elegido..."
 cd /mnt/gentoo
-# Extrae la ruta relativa (ej. 20261018T124555Z/stage3-amd64-openrc-20261018T124555Z.tar.xz)
-STAGE3_PATH=$(curl -s "${BASE_URL}/latest-stage3-amd64-openrc.txt" | grep -v '^#' | awk '{print $1}')
-FULL_URL="${BASE_URL}/${STAGE3_PATH}"
-
-echo "URL de descarga: $FULL_URL"
-wget "$FULL_URL"
-
-# Extrae el archivo tar.xz descargado dinámicamente
+wget "$EXACT_STAGE3_URL"
 tar xpvf stage3-*.tar.xz --xattrs-include='*.*' --numeric-owner
 rm stage3-*.tar.xz
 
